@@ -9,16 +9,51 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   final _emailController = TextEditingController();
-  final _univNameController = TextEditingController();
+  final _codeController = TextEditingController();
   final _apiKey = '469b7054-f161-4e0d-865f-ddbe6d800a8f'; // 자신의 API Key로 변경
   bool _isEmailCertified = false;
-  final _codeController = TextEditingController();
 
   final ApiService _apiService = ApiService();
 
+  String? _selectedUnivName;
+
+  // 학교 목록
+  final List<String> _univNames = [
+    '전북대학교', '전주대학교', '전주기전대학교', '전주비전대학교', '전북과학대학교',
+    '전남도립대학교', '전주교육대학교', '원광대학교', '원광디지털대학교', '원광보건대학교',
+    '광주대학교', '광주가톨릭대학교', '광주교육대학교', '광주여자대학교', '광양보건대학교',
+    '호남대학교', '호남신학대학교', '순천대학교', '순천향대학교', '순천제일대학교',
+    '목포대학교', '목포해양대학교', '목포가톨릭대학교', '전남대학교', '전남과학대학교'
+  ];
+
+  String _getDomainFromEmail(String email) {
+    final domain = email.split('@').last;
+    return domain;
+  }
+
   Future<void> _sendCertificationEmail() async {
     final email = _emailController.text;
-    final univName = _univNameController.text;
+    final univName = _selectedUnivName ?? ''; // 드롭다운에서 선택한 학교 이름
+    final emailDomain = _getDomainFromEmail(email);
+
+    // 도메인과 대학명이 일치하는지 확인
+    if (emailDomain != univName) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text('오류'),
+          content: Text('이메일 도메인과 선택한 대학명이 일치하지 않습니다.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text('확인'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
     final success = await _apiService.certifyEmail(_apiKey, email, univName, true);
 
     if (success) {
@@ -58,7 +93,7 @@ class _SignupPageState extends State<SignupPage> {
 
   Future<void> _verifyCode() async {
     final email = _emailController.text;
-    final univName = _univNameController.text;
+    final univName = _selectedUnivName ?? ''; // 드롭다운에서 선택한 학교 이름
     final code = int.tryParse(_codeController.text);
 
     if (code == null) {
@@ -174,14 +209,26 @@ class _SignupPageState extends State<SignupPage> {
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextField(
                 controller: _emailController,
                 decoration: InputDecoration(labelText: '학교 이메일'),
               ),
-              TextField(
-                controller: _univNameController,
-                decoration: InputDecoration(labelText: '대학교명'),
+              DropdownButton<String>(
+                value: _selectedUnivName,
+                hint: Text('대학교명 선택'),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedUnivName = newValue;
+                  });
+                },
+                items: _univNames.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
               ),
               ElevatedButton(
                 onPressed: _sendCertificationEmail,

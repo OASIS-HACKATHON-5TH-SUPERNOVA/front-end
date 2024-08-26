@@ -78,17 +78,15 @@ class CareerPage extends StatefulWidget {
 }
 
 class _CareerPageState extends State<CareerPage> {
-  final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
   String responseText = "커리어 저장 후 분석 결과가 여기에 표시됩니다.";
 
   Future<void> _saveCareer() async {
-    String title = _titleController.text;
     String description = _descriptionController.text;
 
     // Send data to OpenAI for analysis
-    await _getResponseFromOpenAI(title, description);
+    await _getResponseFromOpenAI(description);
 
     // Show a SnackBar
     ScaffoldMessenger.of(context).showSnackBar(
@@ -96,7 +94,7 @@ class _CareerPageState extends State<CareerPage> {
     );
   }
 
-  Future<void> _getResponseFromOpenAI(String title, String description) async {
+  Future<void> _getResponseFromOpenAI(String description) async {
     const apiKey = 'YOUR_API_KEY_HERE';  // Replace with your API Key
     const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
@@ -111,7 +109,7 @@ class _CareerPageState extends State<CareerPage> {
           "model": "gpt-3.5-turbo",
           "messages": [
             {"role": "system", "content": "You are a helpful assistant that analyzes career entries."},
-            {"role": "user", "content": "Analyze this career data: Title: $title, Description: $description"},
+            {"role": "user", "content": "Analyze this career data: Description: $description"},
           ],
         }),
       );
@@ -144,10 +142,6 @@ class _CareerPageState extends State<CareerPage> {
         child: Column(
           children: [
             TextField(
-              controller: _titleController,
-              decoration: InputDecoration(labelText: '커리어 제목'),
-            ),
-            TextField(
               controller: _descriptionController,
               decoration: InputDecoration(labelText: '경력 상세 설명'),
             ),
@@ -174,15 +168,12 @@ class CareerEditPage extends StatefulWidget {
 }
 
 class _CareerEditPageState extends State<CareerEditPage> {
-  final TextEditingController _editTitleController = TextEditingController();
   final TextEditingController _editDescriptionController = TextEditingController();
 
-  String? savedEditTitle;
   String? savedEditDescription;
 
   void _editCareer() {
     setState(() {
-      savedEditTitle = _editTitleController.text;
       savedEditDescription = _editDescriptionController.text;
     });
 
@@ -202,10 +193,6 @@ class _CareerEditPageState extends State<CareerEditPage> {
         child: Column(
           children: [
             TextField(
-              controller: _editTitleController,
-              decoration: InputDecoration(labelText: '수정할 커리어 제목'),
-            ),
-            TextField(
               controller: _editDescriptionController,
               decoration: InputDecoration(labelText: '경력 상세 수정 내용'),
             ),
@@ -214,7 +201,7 @@ class _CareerEditPageState extends State<CareerEditPage> {
               onPressed: _editCareer,
               child: Text('수정 완료'),
             ),
-            if (savedEditTitle != null && savedEditDescription != null)
+            if (savedEditDescription != null)
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),
                 child: Column(
@@ -225,7 +212,6 @@ class _CareerEditPageState extends State<CareerEditPage> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 10),
-                    Text('제목: $savedEditTitle'),
                     Text('설명: $savedEditDescription'),
                   ],
                 ),
