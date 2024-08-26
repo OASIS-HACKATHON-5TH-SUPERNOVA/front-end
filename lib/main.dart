@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../screens/main_page.dart';
 import '../screens/login.dart'; // 로그인 페이지 파일을 가져옵니다.
 
 void main() {
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false, // 디버그 배너 비활성화
-      home: LoginPage(),
+      home: MainPage(),
     );
   }
 }
