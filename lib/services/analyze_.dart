@@ -24,7 +24,7 @@ class _ChatScreenState extends State<ChatScreen> {
   String responseText = "Awaiting response...";
 
   Future<void> getResponseFromOpenAI() async {
-    const apiKey = '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';
+    const apiKey = '';
     const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
     try {

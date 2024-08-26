@@ -10,7 +10,7 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   final _emailController = TextEditingController();
   final _univNameController = TextEditingController();
-  final _apiKey = '469b7054-f161-4e0d-865f-ddbe6d800a8f'; // 자신의 API Key로 변경
+  final _apiKey = ''; // 자신의 API Key로 변경
   bool _isEmailCertified = false;
   final _codeController = TextEditingController();
 
